@@ -92,6 +92,7 @@ class EnvelopeInfo extends BaseController
         } elseif (! $token_ok) {
             $this->clientService->needToReAuth($this->eg);
         } elseif (! $envelope_id) {
+            $this->routerService->flash('Sorry, you need to chose an envelope first.');
             header('Location: ' . $GLOBALS['app_url'] . 'index.php?page=dashboard');
             exit;
         }

@@ -2,7 +2,8 @@
     "autoload": {
         "psr-4": {"Example\\": "src/",
                   "DocuSign\\OAuth2\\Client\\Provider\\": "src/"
-                 }
+                },
+        "files" : [  "helper.php"]
     },
     "require": {
         "docusign/esign-client": "^5.1.0",

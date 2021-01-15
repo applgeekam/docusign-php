@@ -42,8 +42,15 @@ class Home
       new $controller("envelope&id=". $_GET['id'], $envelope['envelope_id']);
     }
 
+    public function downloadEnvelopeDocument($id, $envelope_id)
+    {
+      $controller = '\Example\Controllers\EnvelopeGetDoc';
+      new $controller("envelope&id=". $id, $envelope_id);
+    }
+
     public function getView()
     {
       return new Vue($this->eg);
     }
+
 }

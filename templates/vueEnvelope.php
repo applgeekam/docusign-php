@@ -45,6 +45,12 @@
             <th scope="row">State</th>
             <td><?php echo $envelope['status']; ?></td>
           </tr>
+          <?php if ($envelope['status'] == "completed"): ?>
+            <tr>
+              <th scope="row">Download the document</th>
+              <td><a href="<?php echo "/index.php?page=download&id=" . $envelope['id'] . "&envelope_id=" . $envelope['envelope_id']; ?>"><button style="margin-left:20px;" class="btn btn-docu">Download</button></a></td>
+            </tr>
+          <?php endif; ?>
         </tbody>
       </table>
     <?php else: ?>
