@@ -4,14 +4,12 @@
 namespace Example\Services;
 
 use DocuSign\eSign\Api\AccountsApi;
-use DocuSign\eSign\Api\BulkEnvelopesApi;
 use DocuSign\eSign\Api\EnvelopesApi;
 use DocuSign\eSign\Api\GroupsApi;
 use DocuSign\eSign\Api\TemplatesApi;
 use DocuSign\eSign\Client\ApiClient;
 use DocuSign\eSign\Client\ApiException;
 use DocuSign\eSign\Configuration;
-use DocuSign\eSign\Model\RecipientViewRequest;
 
 class SignatureClientService
 {
@@ -51,14 +49,6 @@ class SignatureClientService
     }
 
     /**
-     * Getter for the TemplatesApi
-     */
-    public function getTemplatesApi(): TemplatesApi
-    {
-        return new TemplatesApi($this->apiClient);
-    }
-
-    /**
      * Getter for the AccountsApi
      */
     public function getAccountsApi(): AccountsApi
@@ -66,13 +56,6 @@ class SignatureClientService
         return new AccountsApi($this->apiClient);
     }
 
-    /**
-     * Getter for the AccountsApi
-     */
-    public function getGroupsApi(): GroupsApi
-    {
-        return new GroupsApi($this->apiClient);
-    }
 
 
     /**

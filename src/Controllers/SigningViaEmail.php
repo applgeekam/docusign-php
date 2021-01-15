@@ -13,12 +13,11 @@ use DocuSign\eSign\Model\Recipients;
 use DocuSign\eSign\Model\Signer;
 use DocuSign\eSign\Model\SignHere;
 use DocuSign\eSign\Model\Tabs;
-use Example\Controllers\BaseController;
 use Example\Services\SignatureClientService;
 use Example\Services\RouterService;
 use Example\Modele\Envelope;
 
-class SigningViaEmail extends BaseController
+class SigningViaEmail
 {
     /** signatureClientService */
     private $clientService;
@@ -42,7 +41,39 @@ class SigningViaEmail extends BaseController
         $this->args = $this->getEnvelopeArgs();
         $this->clientService = new SignatureClientService($this->args);
         $this->routerService = new RouterService();
-        parent::controller($this->eg, $this->routerService, basename(__FILE__));
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ($method == 'GET') {
+            $this->getController($eg, $routerService);
+        };
+        if ($method == 'POST') {
+            $this->routerService->check_csrf();
+            $this->sendEnvelope();
+        };
+    }
+
+    /**
+     * Show the example's form page
+     *
+     * @param $eg string
+     * @param $routerService RouterService
+     * @return void
+     */
+    private function getController(
+        string $eg,
+        $routerService
+    ): void
+    {
+        if ($routerService->ds_token_ok()) {
+
+            header('Location: ' . $GLOBALS['app_url'] . 'index.php?page=dashboard');
+            exit;
+
+        } else {
+            # Save the current operation so it will be resumed after authentication
+            $_SESSION['eg'] = $GLOBALS['app_url'] . 'index.php?page=' . $eg;
+            header('Location: ' . $GLOBALS['app_url'] . 'index.php?page=must_authenticate');
+            exit;
+        }
     }
 
     /**
@@ -53,7 +84,7 @@ class SigningViaEmail extends BaseController
      * @return void
      * @throws ApiException for API problems and perhaps file access \Exception too.
      */
-    public function createController(): void
+    public function sendEnvelope(): void
     {
         $minimum_buffer_min = 3;
         if ($this->routerService->ds_token_ok($minimum_buffer_min)) {
@@ -191,9 +222,8 @@ class SigningViaEmail extends BaseController
         #
         # The DocuSign platform searches throughout your envelope's
         # documents for matching anchor strings. So the
-        # signHere2 tab will be used in both document 2 and 3 since they
-        #  use the same anchor string for their "signer 1" tabs.
-
+        # signHere tab will be used to anchor signer signature
+        # But it is not required for signer to sign the document
         $sign_here = new SignHere([
             'anchor_string' => '/sn1/', 'anchor_units' =>  'pixels',
             'anchor_y_offset' => '10', 'anchor_x_offset' => '20']);

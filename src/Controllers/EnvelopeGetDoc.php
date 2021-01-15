@@ -6,7 +6,6 @@
 namespace Example\Controllers;
 
 use DocuSign\eSign\Client\ApiException;
-use Example\Controllers\BaseController;
 use Example\Services\SignatureClientService;
 use Example\Services\RouterService;
 use DocuSign\eSign\Model\EnvelopeDocumentsResult;

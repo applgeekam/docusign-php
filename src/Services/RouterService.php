@@ -220,26 +220,4 @@ class RouterService
     {
         return self::CONTROLLER[$eg];
     }
-
-    /**
-     * Get the template example
-     *
-     * @param $eg
-     * @return mixed
-     */
-    public function getTemplate($eg)
-    {
-        return self::TEMPLATES[$eg];
-    }
-
-    /**
-     * Get Controller for the template example
-     *
-     * @param $eg
-     * @return mixed
-     */
-    public function getTitle($eg)
-    {
-        return self::TITLES[$eg];
-    }
 }

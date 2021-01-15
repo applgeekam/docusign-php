@@ -9,8 +9,6 @@ class Vue {
     private $fichier;
     private $template;
 
-    // Titre de la vue (défini dans le fichier vue)
-    private $titre;
 
     public function __construct($action) {
         // Détermination du nom du fichier vue à partir de l'action

@@ -7,15 +7,13 @@ namespace Example\Controllers;
 
 use DocuSign\eSign\Client\ApiException;
 use DocuSign\eSign\Model\Envelope;
-use Example\Controllers\BaseController;
 use Example\Services\SignatureClientService;
 use Example\Services\RouterService;
-
 use Example\Vue\Vue;
 use Example\Modele\Envelope as EnvelopeModel;
 
 
-class EnvelopeInfo extends BaseController
+class EnvelopeInfo
 {
     /** signatureClientService */
     private $clientService;
@@ -39,7 +37,7 @@ class EnvelopeInfo extends BaseController
         $this->args = $this->getTemplateArgs($envelope_id);
         $this->clientService = new SignatureClientService($this->args);
         $this->routerService = new RouterService();
-        parent::controller($this->eg, $this->routerService, basename(__FILE__), true);
+        $this->showEnvelopeInfo();
     }
 
     /**
@@ -49,7 +47,7 @@ class EnvelopeInfo extends BaseController
      * @return void
      * @throws ApiException for API problems and perhaps file access \Exception too.
      */
-    public function createController(): void
+    public function showEnvelopeInfo(): void
     {
         $minimum_buffer_min = 3;
         $envelope_id= $this->args['envelope_id'];
