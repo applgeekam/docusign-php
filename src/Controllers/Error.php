@@ -2,13 +2,10 @@
 
 namespace Example\Controllers;
 
-use Example\Services\RouterService;
 use Example\Vue\Vue;
 
-class Test
+class Error
 {
-    /** RouterService */
-    private $routerService;
 
     private $eg;  # Reference (and URL) for this example
 
@@ -22,8 +19,9 @@ class Test
       $this->eg = ucfirst($page);
     }
 
-    public function display(){
+    public function showNotFoundPage(){
         $shower = new Vue($this->eg);
         $shower->generer([]);
     }
+
 }

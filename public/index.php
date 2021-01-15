@@ -18,6 +18,11 @@ if (session_status() == PHP_SESSION_NONE) {
 
 $GLOBALS['app_url'] = $GLOBALS['DS_CONFIG']['app_url'] . '/';
 
+if (!isset($_SESSION['csrf_token'])) {
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+
 $router = new RouterService();
 
 $router->router();

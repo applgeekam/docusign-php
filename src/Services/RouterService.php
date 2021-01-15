@@ -27,7 +27,8 @@ class RouterService
      */
     private const CONTROLLER = [
         'home' => 'Home',
-        'test' => 'Test',
+        'error' => 'Error',
+        'sigin_with_email' => 'SigningViaEmail',
         'home_rooms' => 'Home',
         'ds_return' => 'DsReturn',
         'must_authenticate' => 'MustAuthenticate',
@@ -168,77 +169,106 @@ class RouterService
     public function router(): void
     {
 
-
-        $page = $_GET['page'] ?? 'test';
-        // $page = $_GET['page'] ?? 'home';
-
-
-        if ($page == 'test') {
-          error_reporting(E_ALL & ~E_NOTICE);
-          $controller = '\Example\Controllers\\' . $this->getController($page);
-          $c = new $controller($page);
-          $c->display();
-          exit();
-        }
+        $page = $_GET['page'] ?? 'home';
 
         if ($page == 'home') {
 
-            // We're not logged in and Quickstart is true:  Route to the 1st example.
-            if ($GLOBALS['DS_CONFIG']['quickstart'] == 'true' && $this->ds_token_ok() == false  && !isset($_SESSION['beenHere'])) {
-                header('Location: ' . $GLOBALS['app_url'] . '/index.php?page=eg001');
-            } else {
-                error_reporting(E_ALL & ~E_NOTICE);
-                $controller = '\Example\Controllers\Examples\\' . $this->getController($page);
-                new $controller($page);
-                exit();
-            }
-        }
+          error_reporting(E_ALL & ~E_NOTICE);
+          $controller = '\Example\Controllers\\' . $this->getController($page);
+          $c = new $controller($page);
+          $c->showHome();
+          exit();
 
-        if ($page == 'must_authenticate') {
-            //is it quickstart have they signed in already?
-            if ($GLOBALS['DS_CONFIG']['quickstart'] == 'true') {
-                //Let's just shortcut to login immediately
-                $this->ds_login();
-                exit();
-            }
-            $controller = 'Example\Controllers\Examples\\' . $this->getController($page);
-            $c = new $controller();
-            $c->controller();
+        }
+        elseif ($page == 'dashboard') {
+          error_reporting(E_ALL & ~E_NOTICE);
+          $controller = '\Example\Controllers\\' . $this->getController('home');
+          $c = new $controller($page);
+          $c->showDashboard();
+          exit();
+        }
+        else if ($page == 'send_envelope') {
+          $method = $_SERVER['REQUEST_METHOD'];
+          if ($method == 'GET') {
+            $this->authService->flash('Sorry, this route is not available for get request ! Only Post is enabled.');
+            header('Location: ' . $GLOBALS['app_url']);
+            exit;
+          };
+          if ($method == 'POST') {
+            error_reporting(E_ALL & ~E_NOTICE);
+            $controller = '\Example\Controllers\\' . $this->getController('sigin_with_email');
+            new $controller('home');
             exit();
+          };
+        }
+        elseif ($page == 'must_authenticate') {
+          $controller = '\Example\Controllers\\' . $this->getController('home');
+          $c = new $controller('authentication');
+          $c->showAuthentication(['back_url' => isset($_SESSION['eg']) ? $_SESSION['eg'] : $GLOBALS['app_url']]);
+          exit();
+
         } elseif ($page == 'ds_login') {
             $this->ds_login(); // See below in oauth section
             exit();
-        } elseif ($page == 'ds_callback') {
+      }
+        else if ($page == 'ds_callback') {
+            $_SESSION['eg'] = $GLOBALS['app_url'] . 'index.php?page=dashboard';
             $this->ds_callback(); // See below in oauth section
             exit();
-        } elseif ($page == 'ds_logout') {
-            $_SESSION['beenHere'] = true;
-            $this->ds_logout(); // See below in oauth section
-            exit();
-        } elseif ($page == 'ds_return') {
-            $GLOBALS['twig']->display('ds_return.html', [
-                'title' => 'Returned data',
-                'event' => isset($_GET['event']) ? $_GET['event'] : false,
-                'envelope_id' => isset($_GET['envelope_id']) ? $_GET['envelope_id'] : false,
-                'state' => isset($_GET['state']) ? $_GET['state'] : false
-            ]);
-
-            // handle eg001 being listed in project root
-        } elseif ($page == 'eg001') {
-            // To ignore the Notice instead of Isset on missing POST vars
-            error_reporting(E_ALL & ~E_NOTICE);
-            $controller = '\Example\\' .$this->getController($page);
-            new $controller($page);
-            exit();
-
-
-        } else {
-            // To ignore the Notice instead of Isset on missing POST vars
-            error_reporting(E_ALL & ~E_NOTICE);
-            $controller = '\Example\Controllers\Examples\\' . $this->getController($page);
-            new $controller($page);
-            exit();
         }
+        else {
+          $controller = '\Example\Controllers\\' . $this->getController('error');
+          $c = new $controller('notfound');
+          $c->showNotFoundPage();
+          exit();
+        }
+
+        // if ($page == 'must_authenticate') {
+        //     //is it quickstart have they signed in already?
+        //     if ($GLOBALS['DS_CONFIG']['quickstart'] == 'true') {
+        //         //Let's just shortcut to login immediately
+        //         $this->ds_login();
+        //         exit();
+        //     }
+        //     $controller = 'Example\Controllers\Examples\\' . $this->getController($page);
+        //     $c = new $controller();
+        //     $c->controller();
+        //     exit();
+        // } elseif ($page == 'ds_login') {
+        //     $this->ds_login(); // See below in oauth section
+        //     exit();
+        // } elseif ($page == 'ds_callback') {
+        //     $_SESSION['eg'] = $GLOBALS['app_url'] . 'index.php?page=' . $eg;
+        //     $this->ds_callback(); // See below in oauth section
+        //     exit();
+        // } elseif ($page == 'ds_logout') {
+        //     $_SESSION['beenHere'] = true;
+        //     $this->ds_logout(); // See below in oauth section
+        //     exit();
+        // } elseif ($page == 'ds_return') {
+        //     $GLOBALS['twig']->display('ds_return.html', [
+        //         'title' => 'Returned data',
+        //         'event' => isset($_GET['event']) ? $_GET['event'] : false,
+        //         'envelope_id' => isset($_GET['envelope_id']) ? $_GET['envelope_id'] : false,
+        //         'state' => isset($_GET['state']) ? $_GET['state'] : false
+        //     ]);
+        //
+        //     // handle eg001 being listed in project root
+        // } elseif ($page == 'eg001') {
+        //     // To ignore the Notice instead of Isset on missing POST vars
+        //     error_reporting(E_ALL & ~E_NOTICE);
+        //     $controller = '\Example\\' .$this->getController($page);
+        //     new $controller($page);
+        //     exit();
+        //
+        //
+        // } else {
+        //     // To ignore the Notice instead of Isset on missing POST vars
+        //     error_reporting(E_ALL & ~E_NOTICE);
+        //     $controller = '\Example\Controllers\Examples\\' . $this->getController($page);
+        //     new $controller($page);
+        //     exit();
+        // }
     }
 
     /**

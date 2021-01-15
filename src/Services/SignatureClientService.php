@@ -131,10 +131,13 @@ class SignatureClientService
     public function showErrorTemplate(ApiException $e): void
     {
         $body = $e->getResponseBody();
-        $GLOBALS['twig']->display('error.html', [
+        $controller = '\Example\Controllers\\' . $this->routerService->getController('error');
+        $c = new $controller('docusignError');
+        $c->showDocusignError([
                 'error_code' => $body->errorCode ?? unserialize($body)->errorCode,
                 'error_message' => $body->message ?? unserialize($body)->message]
-        );
+              );
+        exit();
     }
 
     /**
@@ -165,7 +168,7 @@ class SignatureClientService
      */
     public function needToReAuth($eg): void
     {
-        $this->routerService->flash('Sorry, you need to re-authenticate.');
+        // $this->routerService->flash('Sorry, you need to re-authenticate.');
         # We could store the parameters of the requested operation
         # so it could be restarted automatically.
         # But since it should be rare to have a token issue here,
