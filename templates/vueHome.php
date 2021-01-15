@@ -32,3 +32,7 @@
       <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>"/>
       <button type="submit" class="btn btn-docu">Submit</button>
   </form>
+
+  <div class="">
+    <a href="/index.php?page=dashboard"><button style="margin-top:20px;" class="btn btn-docu">Go to dashboard</button></a>
+  </div>

@@ -37,7 +37,9 @@ class Home
     public function showAnEnvelope($id)
     {
       $model = new Envelope();
-      $this->getView()->generer(['envelope' => $model->getOne($id)]);
+      $envelope = $model->getOne($id);
+      $controller = '\Example\Controllers\EnvelopeInfo';
+      new $controller("envelope&id=". $_GET['id'], $envelope['envelope_id']);
     }
 
     public function getView()

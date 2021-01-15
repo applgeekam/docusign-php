@@ -48,7 +48,7 @@ class Envelope extends Modele {
       ));
   }
 
-// Renvoie la liste des Envelopes
+    // Renvoie la liste des Envelopes
     public function getAll() {
         $sql = 'select * from Envelopes';
         $envelopes = $this->executerRequete($sql);
@@ -61,6 +61,21 @@ class Envelope extends Modele {
                 . ' where id = ?';
         $envelope = $this->executerRequete($sql, array($id));
         return $envelope->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getOneByEnvelopeId($envelope_id)
+    {
+        $sql = 'select * from Envelopes'
+                . ' where envelope_id = ?';
+        $envelope = $this->executerRequete($sql, array($envelope_id));
+        return $envelope->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+    public function updateState($state, $id)
+    {
+      $sql = 'update Envelopes set status=? where envelope_id=?';
+      $this->executerRequete($sql, array($state, $id));
     }
 
 }

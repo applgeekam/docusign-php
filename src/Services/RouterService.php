@@ -29,6 +29,7 @@ class RouterService
         'home' => 'Home',
         'error' => 'Error',
         'sigin_with_email' => 'SigningViaEmail',
+        'envelope_info' => 'EnvelopeInfo',
         'home_rooms' => 'Home',
         'ds_return' => 'DsReturn',
         'must_authenticate' => 'MustAuthenticate',

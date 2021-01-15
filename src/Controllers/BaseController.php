@@ -58,20 +58,22 @@ abstract class BaseController
         string $eg,
         $routerService,
         $basename = null,
-        $brand_languages = null,
-        $brands = null,
-        $permission_profiles = null,
-        $groups = null
+        $avoid_control = false
     ): void
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        if ($method == 'GET') {
-            $this->getController($eg, $routerService);
-        };
-        if ($method == 'POST') {
-            $routerService->check_csrf();
-            $this->createController();
-        };
+        if ($avoid_control) {
+          $this->createController();
+        }
+        else {
+          $method = $_SERVER['REQUEST_METHOD'];
+          if ($method == 'GET') {
+              $this->getController($eg, $routerService);
+          };
+          if ($method == 'POST') {
+              $routerService->check_csrf();
+              $this->createController();
+          };
+        }
     }
 
     /**

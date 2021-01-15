@@ -55,5 +55,6 @@
 <div class="">
   <a href="<?php echo "/index.php?page=envelope&id=" . $envelope['id']; ?>"><button style="margin-left:20px;" class="btn btn-docu">Update state</button></a>
   <a href="/"><button style="margin-left:20px;" class="btn btn-docu">Send a file to sign</button></a>
+  <a href="/index.php?page=dashboard"><button style="margin-left:20px;" class="btn btn-docu">Back</button></a>
 </div>
 </div>
