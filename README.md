@@ -1,4 +1,4 @@
-# A package about this
+#About this package
 
 It is an application that implements the DocuSign API to sign a document.
 
@@ -35,7 +35,7 @@ $GLOBALS['BD_CONFIG'] = $BD_CONFIG;
 ```
 ## Usage
 
-Open public directory in console and run :
+Open <root directory>/public directory in terminal and run :
 
 ```bash
 php -S localhost:3333
