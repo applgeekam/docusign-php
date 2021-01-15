@@ -9,10 +9,11 @@
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Nom</th>
+            <th scope="col">Document name</th>
             <th scope="col">Signer Name</th>
             <th scope="col">Cc Name</th>
             <th scope="col">Date</th>
+            <th scope="col">#</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +24,7 @@
               <td><?php echo $value['signer_name']; ?></td>
               <td><?php echo $value['cc_name']; ?></td>
               <td><?php echo $value['date']; ?></td>
+              <td><a href="<?php echo "/index.php?page=envelope&id=" . $value['id']; ?>"><button style="margin-left:20px;" class="btn btn-docu">See status</button></a></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

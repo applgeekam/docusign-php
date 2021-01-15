@@ -57,10 +57,10 @@ class Envelope extends Modele {
 
     public function getOne($id)
     {
-        $sql = 'select * from Articles'
-                . ' where id=?';
-        $art = $this->executerRequete($sql, array($id));
-        return $art->fetch(PDO::FETCH_ASSOC);
+        $sql = 'select * from Envelopes'
+                . ' where id = ?';
+        $envelope = $this->executerRequete($sql, array($id));
+        return $envelope->fetch(PDO::FETCH_ASSOC);
     }
 
 }

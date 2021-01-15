@@ -215,6 +215,12 @@ class RouterService
             $this->ds_callback(); // See below in oauth section
             exit();
         }
+        else if ($page == 'envelope') {
+          error_reporting(E_ALL & ~E_NOTICE);
+          $controller = '\Example\Controllers\\' . $this->getController('home');
+          $c = new $controller($page);
+          $c->showAnEnvelope($_GET['id']);
+        }
         else {
           $controller = '\Example\Controllers\\' . $this->getController('error');
           $c = new $controller('notfound');

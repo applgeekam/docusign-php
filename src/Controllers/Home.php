@@ -10,6 +10,7 @@ class Home
 
     private $eg;  # Reference (and URL) for this example
 
+    private $view;
     /**
      * Create a new controller instance.
      *
@@ -21,18 +22,26 @@ class Home
     }
 
     public function showHome(){
-        $shower = new Vue($this->eg);
-        $shower->generer([]);
+        $this->getView()->generer([]);
     }
 
     public function showDashboard(){
         $model = new Envelope();
-        $shower = new Vue($this->eg);
-        $shower->generer(['envelopes' => $model->getAll()]);
+        $this->getView()->generer(['envelopes' => $model->getAll()]);
     }
 
     public function showAuthentication($data){
-        $shower = new Vue($this->eg);
-        $shower->generer($data);
+        $this->getView()->generer($data);
+    }
+
+    public function showAnEnvelope($id)
+    {
+      $model = new Envelope();
+      $this->getView()->generer(['envelope' => $model->getOne($id)]);
+    }
+
+    public function getView()
+    {
+      return new Vue($this->eg);
     }
 }
