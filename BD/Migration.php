@@ -37,3 +37,17 @@ $sql = "create table Commandes (
 );";
 
 $seeder->query($sql, 'Commandes');
+
+$sql = "create table Envelopes (
+    id integer primary key auto_increment,
+    date datetime not null,
+    account_id text not null,
+    envelope_id text not null,
+    file_link text,
+    file_name varchar(300),
+    signer_email varchar(300),
+    signer_name varchar(300),
+    cc_email varchar(300),
+    cc_name varchar(300),
+    status varchar(100) not null
+);";

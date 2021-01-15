@@ -1,5 +1,6 @@
 <?php
 
+namespace Example\Modele;
 /**
  * Classe abstraite Modèle.
  * Centralise les services d'accès à une base de données.
@@ -38,9 +39,9 @@ abstract class Modele {
     private function getBdd() {
         if ($this->bdd == null) {
             // Création de la connexion
-            $this->bdd = new PDO('mysql:host=localhost;dbname=plante;charset=utf8',
-                    'root', 'root',
-                    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+            $this->bdd = new \PDO('mysql:host='. $GLOBALS['BD_CONFIG']['host'] . ';dbname='. $GLOBALS['BD_CONFIG']['dbname'] .';charset=utf8',
+                    $GLOBALS['BD_CONFIG']['username'], $GLOBALS['BD_CONFIG']['pwd'],
+                    array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
         }
         return $this->bdd;
     }

@@ -16,6 +16,7 @@ use DocuSign\eSign\Model\Tabs;
 use Example\Controllers\BaseController;
 use Example\Services\SignatureClientService;
 use Example\Services\RouterService;
+use Example\Modele\Envelope;
 
 class SigningViaEmail extends BaseController
 {
@@ -38,7 +39,7 @@ class SigningViaEmail extends BaseController
     public function __construct($eg)
     {
         $this->eg = $eg;
-        $this->args = $this->getTemplateArgs();
+        $this->args = $this->getEnvelopeArgs();
         $this->clientService = new SignatureClientService($this->args);
         $this->routerService = new RouterService();
         parent::controller($this->eg, $this->routerService, basename(__FILE__));
@@ -62,13 +63,31 @@ class SigningViaEmail extends BaseController
             $results = $this->worker($this->args);
 
             if ($results) {
-                $_SESSION["envelope_id"] = $results["envelope_id"]; # Save for use by other examples
-                                                                    # which need an envelope_id
-                // Save info to db
 
+                // Save info to db
+                $model = new Envelope();
+
+                $to_save = [
+                  'account_id' => $this->args['account_id'],
+                  'envelope_id' => $results["envelope_id"],
+                  'file_name' => $this->args['envelope_args']['doc']['name'],
+                  'file_link' => $this->args['envelope_args']['doc']['link'],
+                  'signer_email' =>$this->args['envelope_args']['signer_email'],
+                   'signer_name' => $this->args['envelope_args']['signer_name'],
+                   'cc_email' => $this->args['envelope_args']['cc_email'],
+                   'cc_name' => $this->args['envelope_args']['cc_name'],
+                   'status' => $this->args['envelope_args']['status']
+                ];
+
+                $model->save($to_save);
 
                 header('Location: ' . $GLOBALS['app_url'] . 'index.php?page=dashboard');
                 exit;
+            }
+            else {
+              $this->routerService->flash("Sorry, something goes wrong. Try again please.");
+              header('Location: ' . $GLOBALS['app_url'] . 'index.php?page=dashboard');
+              exit;
             }
         } else {
             $this->clientService->needToReAuth($this->eg);
@@ -133,39 +152,29 @@ class SigningViaEmail extends BaseController
         $envelope_definition = new EnvelopeDefinition([
            'email_subject' => 'Please sign this document set'
         ]);
-        $doc1_b64 = base64_encode($this->clientService->createDocumentForEnvelope($args));
-        # read files 2 and 3 from a local directory
+
+        # read file from a local directory
         # The reads could raise an exception if the file is not available!
-        $content_bytes = file_get_contents(self::DEMO_DOCS_PATH . $GLOBALS['DS_CONFIG']['doc_docx']);
-        $doc2_b64 = base64_encode($content_bytes);
-        $content_bytes = file_get_contents(self::DEMO_DOCS_PATH . $GLOBALS['DS_CONFIG']['doc_pdf']);
-        $doc3_b64 = base64_encode($content_bytes);
+
+        $content_bytes = file_get_contents($args['doc']['link']);
+        $doc_b64 = base64_encode($content_bytes);
 
         # Create the document models
-        $document1 = new Document([  # create the DocuSign document object
-            'document_base64' => $doc1_b64,
-            'name' => 'Order acknowledgement',  # can be different from actual file name
-            'file_extension' => 'html',  # many different document types are accepted
-            'document_id' => '1'  # a label used to reference the doc
+        $document = new Document([  # create the DocuSign document object
+            'document_base64' => $doc_b64,
+            'name' => $args['doc']['name'],  # can be different from actual file name
+            'file_extension' => $args['doc']['type'],  # many different document types are accepted
+            'document_id' => strval(mt_rand(1,100))  # a label used to reference the doc,
         ]);
-        $document2 = new Document([  # create the DocuSign document object
-            'document_base64' => $doc2_b64,
-            'name' => 'Battle Plan',  # can be different from actual file name
-            'file_extension' => 'docx',  # many different document types are accepted
-            'document_id' => '2'  # a label used to reference the doc
-        ]);
-        $document3 = new Document([  # create the DocuSign document object
-            'document_base64' => $doc3_b64,
-            'name' => 'Lorem Ipsum',  # can be different from actual file name
-            'file_extension' => 'pdf',  # many different document types are accepted
-            'document_id' => '3'  # a label used to reference the doc
-        ]);
+
+
         # The order in the docs array determines the order in the envelope
-        $envelope_definition->setDocuments([$document1, $document2, $document3]);
+        # You can use insert more document at same time
+        $envelope_definition->setDocuments([$document]);
 
 
         # Create the signer recipient model
-        $signer1 = new Signer([
+        $signer = new Signer([
             'email' => $args['signer_email'], 'name' => $args['signer_name'],
             'recipient_id' => "1", 'routing_order' => "1"]);
         # routingOrder (lower means earlier) determines the order of deliveries
@@ -173,7 +182,7 @@ class SigningViaEmail extends BaseController
         # same integer as the order for two or more recipients.
 
         # create a cc recipient to receive a copy of the documents
-        $cc1 = new CarbonCopy([
+        $cc = new CarbonCopy([
             'email' => $args['cc_email'], 'name' => $args['cc_name'],
             'recipient_id' => "2", 'routing_order' => "2"]);
 
@@ -184,21 +193,19 @@ class SigningViaEmail extends BaseController
         # documents for matching anchor strings. So the
         # signHere2 tab will be used in both document 2 and 3 since they
         #  use the same anchor string for their "signer 1" tabs.
-        $sign_here1 = new SignHere([
-            'anchor_string' => '**signature_1**', 'anchor_units' => 'pixels',
-            'anchor_y_offset' => '10', 'anchor_x_offset' => '20']);
-        $sign_here2 = new SignHere([
+
+        $sign_here = new SignHere([
             'anchor_string' => '/sn1/', 'anchor_units' =>  'pixels',
             'anchor_y_offset' => '10', 'anchor_x_offset' => '20']);
 
         # Add the tabs model (including the sign_here tabs) to the signer
         # The Tabs object wants arrays of the different field/tab types
-        $signer1->setTabs(new Tabs([
-            'sign_here_tabs' => [$sign_here1, $sign_here2]]));
+        $signer->setTabs(new Tabs([
+            'sign_here_tabs' => [$sign_here]]));
 
         # Add the recipients to the envelope object
         $recipients = new Recipients([
-            'signers' => [$signer1], 'carbon_copies' => [$cc1]]);
+            'signers' => [$signer], 'carbon_copies' => [$cc]]);
         $envelope_definition->setRecipients($recipients);
 
         # Request that the envelope be sent by setting |status| to "sent".
@@ -210,11 +217,11 @@ class SigningViaEmail extends BaseController
     # ***DS.snippet.0.end
 
     /**
-     * Get specific template arguments
+     * Get specific envelope arguments
      *
      * @return array
      */
-    private function getTemplateArgs(): array
+    private function getEnvelopeArgs(): array
     {
         $signer_name  = preg_replace('/([^\w \-\@\.\,])+/', '', $_POST['signer_name' ]);
         $signer_email = preg_replace('/([^\w \-\@\.\,])+/', '', $_POST['signer_email']);
@@ -225,7 +232,8 @@ class SigningViaEmail extends BaseController
             'signer_name' => $signer_name,
             'cc_email' => $cc_email,
             'cc_name' => $cc_name,
-            'status' => 'sent'
+            'status' => 'sent',
+            'doc' => $this->getEnvelopeDoc()
         ];
         $args = [
             'account_id' => $_SESSION['ds_account_id'],
@@ -235,5 +243,64 @@ class SigningViaEmail extends BaseController
         ];
 
         return $args;
+    }
+
+    /**
+     * Get envelope documents
+     *
+     * @return array
+     */
+
+    private function getEnvelopeDoc(): array
+    {
+      $target_dir = $_SERVER['DOCUMENT_ROOT']. "/" . "uploads/";
+      $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+      $uploadOk = 1;
+      $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+
+      // Check if file already exists
+      if (file_exists($target_file)) {
+        return [
+          'link' => $target_file,
+          'name' => basename($_FILES["fileToUpload"]["name"]),
+          'type' => $imageFileType,
+         ];
+      }
+
+       // Check file size
+      if ($_FILES["fileToUpload"]["size"] > 500000) {
+        $this->routerService->flash("Sorry, your file is too large.");
+        $uploadOk = 0;
+       }
+
+      // Allow certain file formats
+      if($imageFileType != "pdf") {
+        $this->routerService->flash("Sorry, only PDF files are allowed.");
+        $uploadOk = 0;
+      }
+
+      // Check if $uploadOk is set to 0 by an error
+      if ($uploadOk == 0) {
+        $this->routerService->flash("Sorry, your file was not uploaded.");
+        header('Location: ' . $GLOBALS['app_url'] . 'index.php?page=' . $this->eg);
+        exit;
+      // if everything is ok, try to upload file
+      } else {
+
+          if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+
+            return [
+              'link' => $target_file,
+              'name' => basename($_FILES["fileToUpload"]["name"]),
+              'type' => $imageFileType,
+             ];
+
+          } else {
+
+            $this->routerService->flash("Sorry, there was an error uploading your file.");
+            header('Location: ' . $GLOBALS['app_url'] . 'index.php?page=' . $this->eg);
+            exit;
+          }
+      }
     }
 }

@@ -24,4 +24,10 @@ class Error
         $shower->generer([]);
     }
 
+    public function showDocusignError($data)
+    {
+      $shower = new Vue($this->eg);
+      $shower->generer($data);
+    }
+
 }

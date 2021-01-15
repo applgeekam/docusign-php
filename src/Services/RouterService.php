@@ -212,7 +212,6 @@ class RouterService
             exit();
       }
         else if ($page == 'ds_callback') {
-            $_SESSION['eg'] = $GLOBALS['app_url'] . 'index.php?page=dashboard';
             $this->ds_callback(); // See below in oauth section
             exit();
         }

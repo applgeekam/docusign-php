@@ -9,6 +9,7 @@ abstract class BaseController
      * Path for the directory with demo documents
      */
     public const DEMO_DOCS_PATH = __DIR__ . '/../../public/demo_documents/';
+    public const DOCS_PATH = __DIR__ . '/../../public/uploads/';
 
     # DCM-3905 The SDK helper method for setting the SigningUIVersion is temporarily unavailable at this time.
     # As a temporary workaround, a raw JSON settings object is passed to sdk methods that use a permission profile.

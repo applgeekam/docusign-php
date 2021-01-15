@@ -3,6 +3,7 @@
 namespace Example\Controllers;
 
 use Example\Vue\Vue;
+use Example\Modele\Envelope;
 
 class Home
 {
@@ -25,8 +26,9 @@ class Home
     }
 
     public function showDashboard(){
+        $model = new Envelope();
         $shower = new Vue($this->eg);
-        $shower->generer([]);
+        $shower->generer(['envelopes' => $model->getAll()]);
     }
 
     public function showAuthentication($data){
