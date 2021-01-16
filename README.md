@@ -1,4 +1,4 @@
-#About this package
+# About this package
 
 It is an application that implements the DocuSign API to sign a document.
 
