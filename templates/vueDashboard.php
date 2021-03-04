@@ -20,10 +20,10 @@
           <?php foreach ($envelopes as $key => $value): ?>
             <tr>
               <th scope="row"><?php echo $key;  ?></th>
-              <td><?php echo $value['file_name']; ?></td>
+              <td><?php echo $value['file_name']; ?></td> 
               <td><?php echo $value['signer_name']; ?></td>
               <td><?php echo $value['cc_name']; ?></td>
-              <td><?php echo $value['date']; ?></td>
+              <td><?php echo $value['dateC']; ?></td>
               <td><a href="<?php echo "/index.php?page=envelope&id=" . $value['id']; ?>"><button style="margin-left:20px;" class="btn btn-docu">See status</button></a></td>
             </tr>
           <?php endforeach; ?>

@@ -10,7 +10,7 @@ class Envelope extends Modele {
 
   public function save($values) {
       $sql = 'insert into Envelopes (
-        date,
+        dateC,
         account_id,
         envelope_id,
         file_link,
@@ -21,21 +21,9 @@ class Envelope extends Modele {
         cc_name,
         status
         ) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
-      $date = date('Y-m-d h-m-s');  // Récupère la date courante
-      var_dump(array(
-        $date,
-        $values['account_id'],
-        $values['envelope_id'],
-        $values['file_link'],
-        $values['file_name'],
-        $values['signer_email'],
-        $values['signer_name'],
-        $values['cc_email'],
-        $values['cc_name'],
-        $values['status']
-      ));
+      $dateC = date('Y-m-d h-m-s');  // Récupère la date courante
       $this->executerRequete($sql, array(
-        $date,
+        $dateC,
         $values['account_id'],
         $values['envelope_id'],
         $values['file_link'],
@@ -79,3 +67,22 @@ class Envelope extends Modele {
     }
 
 }
+
+// Creation de la db
+/*
+
+  Create Table Envelopes (
+  id int PRIMARY KEY AUTO_INCREMENT not null,
+  dateC DateTime,
+  account_id text,
+  envelope_id text,
+  file_link varchar(250),
+  file_name varchar(200),
+  signer_email varchar(100),
+  signer_name varchar(100),
+  cc_email varchar(100),
+  cc_name varchar(100),
+  status varchar(50)
+  )
+
+*/
