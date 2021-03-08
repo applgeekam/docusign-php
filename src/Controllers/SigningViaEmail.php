@@ -37,13 +37,13 @@ class SigningViaEmail
      */
     public function __construct($eg)
     {
+        $this->routerService = new RouterService();
         $this->eg = $eg;
         $this->args = $this->getEnvelopeArgs();
         $this->clientService = new SignatureClientService($this->args);
-        $this->routerService = new RouterService();
         $method = $_SERVER['REQUEST_METHOD'];
         if ($method == 'GET') {
-            $this->getController($eg, $routerService);
+            $this->getController($eg, $this->routerService);
         };
         if ($method == 'POST') {
             $this->routerService->check_csrf();

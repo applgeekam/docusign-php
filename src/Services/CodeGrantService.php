@@ -13,7 +13,6 @@ class CodeGrantService
      */
     public function flash(string $msg): void
     {
-        $_SESSION['flash'] = [];
         array_push($_SESSION['flash'], $msg);
     }
 

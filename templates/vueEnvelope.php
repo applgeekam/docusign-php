@@ -39,7 +39,7 @@
           </tr>
           <tr>
             <th scope="row">Date of send</th>
-            <td><?php echo $envelope['date']; ?></td>
+            <td><?php echo $envelope['dateC']; ?></td>
           </tr>
           <tr>
             <th scope="row">State</th>
