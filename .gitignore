@@ -8,3 +8,6 @@
 
 # do not check in secrets
 ds_config.php
+
+# Uploads files
+public/uploads/*
